@@ -20,16 +20,16 @@ def load_models():
     # ▶️ Google Drive 모델 파일 ID (수정해서 넣기)
     injury_model_id = "1mYGG3lZQDJwsaqSXgvC8lB0BHJmqHSap"
     injury_model_path = "injury_type_model.cbm"
-    download_model_from_drive(injury_model_id, injury_model_path)
+    download_model_from_drive(injury_type_model_id, injury_type_model_path)
 
     # ▶️ 기인물 예측 모델은 용량 작으면 그냥 포함
     cause_model = CatBoostClassifier()
-    cause_model.load_model("cause_model.cbm")
+    cause_model.load_model("cause_material_model.cbm")
 
     injury_model = CatBoostClassifier()
-    injury_model.load_model(injury_model_path)
+    injury_model.load_model(injury_tpye_model_path)
 
-    with open("risk_dict.pkl", "rb") as f:
+    with open("risk_model_average.pkl", "rb") as f:
         risk_data = pickle.load(f)
 
     with open("encoders.pkl", "rb") as f:
