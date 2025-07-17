@@ -54,13 +54,13 @@ work_type = st.selectbox("Work type", encoders['Work type'].classes_)
 
 if st.button("위험도 예측"):
     # ⛓️ 인코딩
-    x_input = pd.DataFrame([[ 
-        encoders['Project scale'].transform([project_scale])[0],
-        encoders['Facility type'].transform([facility_type])[0],
-        encoders['Work type'].transform([work_type])[0]
-    ]], columns=["Project scale", "Facility type", "Work type"])
+    x_input = pd.DataFrame([[
+    encoders['Project scale'].transform([project_scale])[0],
+    encoders['Facility Type'].transform([facility_type])[0],
+    encoders['Work type'].transform([work_type])[0]
+    ]], columns=["Project scale", "Facility Type", "Work type"])
 
-    st.write("입력 데이터 확인", x_input)  
+    st.write("입력 데이터 확인", x_input)
     st.write("입력 데이터 타입", x_input.dtypes)
 
     # 🔮 예측
