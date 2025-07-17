@@ -60,6 +60,9 @@ if st.button("위험도 예측"):
         encoders['Work type'].transform([work_type])[0]
     ]], columns=["Project scale", "Facility type", "Work type"])
 
+    st.write("입력 데이터 확인", x_input)  
+    st.write("입력 데이터 타입", x_input.dtypes)
+
     # 🔮 예측
     pred_cause = cause_model.predict(x_input)[0]
     pred_injury = injury_model.predict(x_input)[0]
