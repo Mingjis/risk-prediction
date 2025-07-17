@@ -6,44 +6,36 @@ import requests
 from catboost import CatBoostClassifier
 
 # 🎯 Google Drive에서 모델 다운로드 함수
-# ✅ Google Drive에서 다운로드할 파일 ID들
-cause_model_id = "📌기인물 모델 Drive 파일 ID"
-injury_type_model_id = "📌부상유형 모델 Drive 파일 ID"
-risk_dict_id = "📌risk_dict.pkl 파일 ID"
-encoders_id = "📌encoders.pkl 파일 ID"
-
-# ✅ 저장할 경로
-cause_model_path = "cause_material_model.cbm"
-injury_type_model_path = "injury_type_model.cbm"
-risk_dict_path = "risk_dict.pkl"
-encoders_path = "encoders.pkl"
-
 def download_model_from_drive(file_id, output_path):
     if not os.path.exists(output_path):
-        print(f"📥 Downloading model from Google Drive: {output_path}")
         url = f"https://drive.google.com/uc?export=download&id={file_id}"
         response = requests.get(url)
         with open(output_path, "wb") as f:
             f.write(response.content)
 
+# ✅ Google Drive에서 다운로드할 파일 ID
+injury_type_model_id = "1mYGG3lZQDJwsaqSXgvC8lB0BHJmqHSap"
+injury_type_model_path = "injury_type_model.cbm"
+
 # 🎯 모델 및 리소스 로딩
 @st.cache_resource
 def load_models():
-    # ▶️ Google Drive 모델 파일 ID (수정해서 넣기)
-    injury_model_id = "1mYGG3lZQDJwsaqSXgvC8lB0BHJmqHSap"
-    injury_model_path = "injury_type_model.cbm"
+    # 📥 Google Drive에서 부상유형 예측 모델 다운로드
     download_model_from_drive(injury_type_model_id, injury_type_model_path)
 
-    # ▶️ 기인물 예측 모델은 용량 작으면 그냥 포함
+    # 📦 기인물 모델 (사전에 포함된다고 가정)
     cause_model = CatBoostClassifier()
     cause_model.load_model("cause_material_model.cbm")
 
+    # 📦 부상유형 모델
     injury_model = CatBoostClassifier()
-    injury_model.load_model(injury_tpye_model_path)
+    injury_model.load_model(injury_type_model_path)
 
+    # 📦 위험도 계산 딕셔너리
     with open("risk_model_average.pkl", "rb") as f:
         risk_data = pickle.load(f)
 
+    # 📦 인코더
     with open("encoders.pkl", "rb") as f:
         encoders = pickle.load(f)
 
@@ -53,19 +45,20 @@ def load_models():
 cause_model, injury_model, risk_data, encoders = load_models()
 
 # 🎛️ 사용자 입력
-st.title("건설 재해 사망 위험도 예측기")
+st.title("🏗️ 건설 재해 사망 위험도 예측기")
 st.markdown("**아래 정보를 입력하면 사고유형, 기인물, 위험도를 예측해줍니다**")
 
 project_scale = st.selectbox("Project scale", encoders['Project scale'].classes_)
-facility_type = st.selectbox("Facility type", encoders['Facility Type'].classes_)
+facility_type = st.selectbox("Facility type", encoders['Facility type'].classes_)
 work_type = st.selectbox("Work type", encoders['Work type'].classes_)
 
 if st.button("위험도 예측"):
-    x_input = pd.DataFrame([[  # ⛓️ 인코딩
+    # ⛓️ 인코딩
+    x_input = pd.DataFrame([[ 
         encoders['Project scale'].transform([project_scale])[0],
-        encoders['Facility Type'].transform([facility_type])[0],
+        encoders['Facility type'].transform([facility_type])[0],
         encoders['Work type'].transform([work_type])[0]
-    ]], columns=["Project scale", "Facility Type", "Work type"])
+    ]], columns=["Project scale", "Facility type", "Work type"])
 
     # 🔮 예측
     pred_cause = cause_model.predict(x_input)[0]
