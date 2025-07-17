@@ -6,6 +6,18 @@ import requests
 from catboost import CatBoostClassifier
 
 # 🎯 Google Drive에서 모델 다운로드 함수
+# ✅ Google Drive에서 다운로드할 파일 ID들
+cause_model_id = "📌기인물 모델 Drive 파일 ID"
+injury_type_model_id = "📌부상유형 모델 Drive 파일 ID"
+risk_dict_id = "📌risk_dict.pkl 파일 ID"
+encoders_id = "📌encoders.pkl 파일 ID"
+
+# ✅ 저장할 경로
+cause_model_path = "cause_material_model.cbm"
+injury_type_model_path = "injury_type_model.cbm"
+risk_dict_path = "risk_dict.pkl"
+encoders_path = "encoders.pkl"
+
 def download_model_from_drive(file_id, output_path):
     if not os.path.exists(output_path):
         print(f"📥 Downloading model from Google Drive: {output_path}")
